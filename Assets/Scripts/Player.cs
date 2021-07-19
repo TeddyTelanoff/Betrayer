@@ -4,9 +4,14 @@ using UnityEngine;
 
 public class Player: MonoBehaviour
 {
+	public static Player main { get; private set; }
+
 	[Header("Controller")]
 	public Rigidbody rb;
 	public float speed;
+	public float dashSpeed;
+	public float dashDuration;
+	public float dashRefuel;
 	public float flipSpeed;
 	public float turnSpeed;
 
@@ -15,10 +20,33 @@ public class Player: MonoBehaviour
 	public GameObject laserPrefab;
 
 	private float rotX;
+	private float dashLeftRatio => 1 - dashLeft / dashDuration;
+	private float dashLeft;
+	private float dashRefuelLeft;
+
+	private void Awake() =>
+		main = this;
+
+	private void Start() =>
+		dashLeft = dashDuration;
 
 	private void FixedUpdate()
 	{
-		rb.AddForce(speed * transform.forward * Time.deltaTime, ForceMode.Acceleration);
+		float accel = speed;
+		if (Input.GetKey(KeyCode.LeftShift) && dashLeft > 0)
+		{
+			accel = dashSpeed;
+			dashLeft -= Time.deltaTime;
+			dashRefuelLeft = dashLeftRatio * dashRefuel;
+		}
+		else if (dashRefuelLeft > 0)
+		{
+			dashRefuelLeft -= Time.deltaTime;
+			if (dashRefuelLeft <= 0)
+				dashLeft = dashDuration;
+		}
+
+		rb.AddForce(accel * transform.forward * Time.deltaTime, ForceMode.Acceleration);
 
 		float turnX = -Input.GetAxis("Vertical");
 		float turnY = Input.GetAxis("Horizontal");
