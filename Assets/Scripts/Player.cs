@@ -17,9 +17,7 @@ public class Player: MonoBehaviour
 	private void Update()
 	{
 		if (Input.GetKeyDown(KeyCode.Space))
-		{
 			Fire();
-		}
 	}
 
 	private void FixedUpdate()
@@ -30,7 +28,7 @@ public class Player: MonoBehaviour
 			transform.position = dest;
 		else
 			transform.position += dist.normalized * speed;
-		if (dist.magnitude != 0)
+		if (dist.magnitude > .1)
 			transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(dist.y, dist.x) * Mathf.Rad2Deg - 90);
 	}
 
@@ -39,7 +37,6 @@ public class Player: MonoBehaviour
 		var obj = Instantiate(misilePrefab);
 		obj.transform.position = transform.position;
 		var misile = obj.GetComponent<Misile>();
-		misile.sinOff = Time.time;
 		misile.baseRot = transform.rotation.eulerAngles.z;
 	}
 

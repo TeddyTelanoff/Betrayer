@@ -6,6 +6,7 @@ public class Game : MonoBehaviour
 {
     public static Game instance { get; private set; }
 
+	public Player player;
 	public Camera cam;
 
 	private void Awake() =>
