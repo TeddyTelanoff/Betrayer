@@ -7,6 +7,9 @@ public class Enemy: MonoBehaviour
 	[Header("Rocket")]
 	public float baseSpeed;
 
+	[Header("Data - Do not change!")]
+	public bool gud;
+
 	public Vector3 dest => Game.instance.player.transform.position;
 	public float speed => baseSpeed * Time.deltaTime;
 
@@ -41,6 +44,9 @@ public class Enemy: MonoBehaviour
 
 		IEnumerator Coroutine()
 		{
+			if (gud)
+				yield break;
+			gud = true;
 			yield return new WaitForEndOfFrame();
 
 			var obj = Instantiate(Game.instance.friendPrefab);

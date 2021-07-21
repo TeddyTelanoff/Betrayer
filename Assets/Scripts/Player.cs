@@ -44,9 +44,9 @@ public class Player: MonoBehaviour
 		StartCoroutine(Coroutine());
 	}
 
-	private void OnDrawGizmos()
+	private void OnCollisionEnter2D(Collision2D other)
 	{
-		Gizmos.color = Color.white;
-		Gizmos.DrawLine(transform.position, dest);
+		if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+			Game.instance.Lose();
 	}
 }

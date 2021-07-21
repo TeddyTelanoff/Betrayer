@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Game : MonoBehaviour
 {
@@ -14,11 +16,15 @@ public class Game : MonoBehaviour
 	[Header("Celebrities")]
 	public Player player;
 	public Camera cam;
+	public Text lvlTxt;
+	public GameObject losePanel;
 
 	[Header("Settings")]
 	public int startEnemies;
+	public float bleepDuration;
 
 	[Header("Data - Do not change!")]
+	public int iteration;
 	public bool betraying;
 	public List<Enemy> enemies = new List<Enemy>();
 	public List<Friend> friends = new List<Friend>();
@@ -28,16 +34,22 @@ public class Game : MonoBehaviour
 
 	private void Start()
 	{
+		iteration++;
+		lvlTxt.text = $"Level {iteration}";
 		for (int i = 0; i < startEnemies; i++)
 			Instantiate(enemyPrefab);
 	}
 
-	public Vector3 MousePos()
+	public void Lose()
 	{
-		var pxCoord = Input.mousePosition;
-		var pos = cam.ScreenToWorldPoint(pxCoord);
-		pos.z = 0;
-		return pos;
+		Time.timeScale = 0;
+		losePanel.SetActive(true);
+	}
+
+	public void ResetTimeline()
+	{
+		Time.timeScale = 1;
+		SceneManager.LoadScene(0);
 	}
 
 	public void Betray()
@@ -48,6 +60,8 @@ public class Game : MonoBehaviour
 				yield break;
 
 			betraying = true;
+			iteration++;
+			lvlTxt.text = $"Level {iteration}";
 
 			int fcount = friends.Count;
 			var positions = new Vector3[fcount];
@@ -57,15 +71,14 @@ public class Game : MonoBehaviour
 			while (friends.Count > 0)
 			{
 				Destroy(friends[0].gameObject);
-				yield return null;
+				yield return new WaitForSeconds(bleepDuration);
 			}
-
-			yield return new WaitForEndOfFrame();
 
 			for (int i = 0; i < fcount; i++)
 			{
 				var obj = Instantiate(enemyPrefab);
 				obj.transform.position = positions[i];
+				yield return new WaitForSeconds(bleepDuration);
 			}
 
 			Instantiate(enemyPrefab);
@@ -74,5 +87,13 @@ public class Game : MonoBehaviour
 		}
 
 		StartCoroutine(Coroutine());
+	}
+
+	public Vector3 MousePos()
+	{
+		var pxCoord = Input.mousePosition;
+		var pos = cam.ScreenToWorldPoint(pxCoord);
+		pos.z = 0;
+		return pos;
 	}
 }
