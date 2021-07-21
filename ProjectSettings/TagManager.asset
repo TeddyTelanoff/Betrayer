@@ -35,8 +35,8 @@ TagManager:
   - 
   - 
   - 
-  - Enemy Bubble
-  - Enemy
+  - 
+  - 
   m_SortingLayers:
   - name: Default
     uniqueID: 0
