@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class Player: MonoBehaviour
 {
-	[Header("Prefabs")]
-	public GameObject misilePrefab;
-
 	[Header("Rocket")]
 	public float baseSpeed;
 
@@ -34,10 +31,17 @@ public class Player: MonoBehaviour
 
 	public void Fire()
 	{
-		var obj = Instantiate(misilePrefab);
-		obj.transform.position = transform.position;
-		var misile = obj.GetComponent<Misile>();
-		misile.baseRot = transform.rotation.eulerAngles.z;
+		IEnumerator Coroutine()
+		{
+			yield return new WaitForEndOfFrame();
+
+			var obj = Instantiate(Game.instance.misilePrefab);
+			obj.transform.position = transform.position;
+			var misile = obj.GetComponent<Misile>();
+			misile.baseRot = transform.rotation.eulerAngles.z;
+		}
+
+		StartCoroutine(Coroutine());
 	}
 
 	private void OnDrawGizmos()

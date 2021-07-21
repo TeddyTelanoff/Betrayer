@@ -33,9 +33,9 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
+  - Friend
+  - Enemy
+  - Enemy Bubble
   - Kabloowi
   m_SortingLayers:
   - name: Default
