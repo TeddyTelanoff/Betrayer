@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class Game : MonoBehaviour
 {
-    public static Game instance { get; private set; }
+	public static Game instance { get; private set; }
 
 	[Header("Prefabs")]
 	public GameObject misilePrefab;
@@ -26,6 +26,7 @@ public class Game : MonoBehaviour
 	[Header("Data - Do not change!")]
 	public int iteration;
 	public bool betraying;
+	public Vector3 playerStartPos;
 	public List<Enemy> enemies = new List<Enemy>();
 	public List<Friend> friends = new List<Friend>();
 
@@ -34,11 +35,26 @@ public class Game : MonoBehaviour
 
 	private void Start()
 	{
+		Time.timeScale = 1;
+		if (player)
+			playerStartPos = player.transform.position;
+
 		iteration++;
-		lvlTxt.text = $"Level {iteration}";
-		for (int i = 0; i < startEnemies; i++)
-			Instantiate(enemyPrefab);
+		if (lvlTxt)
+			lvlTxt.text = $"Level {iteration}";
+
+		IEnumerator Coroutine()
+		{
+			yield return new WaitForSeconds(1.69f);
+			for (int i = 0; i < startEnemies; i++)
+				Instantiate(enemyPrefab);
+		}
+
+		StartCoroutine(Coroutine());
 	}
+
+	public void Exit() =>
+		Application.Quit();
 
 	public void Lose()
 	{
@@ -46,10 +62,37 @@ public class Game : MonoBehaviour
 		losePanel.SetActive(true);
 	}
 
-	public void ResetTimeline()
+	public void Menu()
 	{
 		Time.timeScale = 1;
-		SceneManager.LoadScene(0);
+		Debug.Log("menu");
+		SceneManager.LoadSceneAsync(0);
+	}
+
+	public void ResetTimeline()
+	{
+		IEnumerator Coroutine()
+		{
+			iteration = 1;
+			foreach (var friend in friends)
+				Destroy(friend.gameObject);
+			yield return null;
+			foreach (var enemy in enemies)
+				Destroy(enemy.gameObject);
+			yield return null;
+
+			lvlTxt.text = $"Level {iteration}";
+			for (int i = 0; i < startEnemies; i++)
+				Instantiate(enemyPrefab);
+			yield return null;
+
+			losePanel.SetActive(false);
+			player.transform.position = playerStartPos;
+
+			Time.timeScale = 1;
+		}
+
+		StartCoroutine(Coroutine());
 	}
 
 	public void Betray()

@@ -5,6 +5,7 @@ using UnityEngine;
 public class LoopDisMusik: MonoBehaviour
 {
 	public AudioSource audioSource;
+	public float start;
 	public float cuttoff;
 
 	private void Start()
@@ -12,8 +13,8 @@ public class LoopDisMusik: MonoBehaviour
 		IEnumerator Coroutine()
 		{
 		Begin:
-			yield return new WaitForSeconds(cuttoff);
-			audioSource.time = 0;
+			audioSource.time = start;
+			yield return new WaitForSeconds(cuttoff - start);
 			goto Begin;
 		}
 
